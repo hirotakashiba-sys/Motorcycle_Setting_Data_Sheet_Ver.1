@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motorcycle Setting Data Sheet V1.3</title>
+    <title>Motorcycle Setting Data Sheet Ver1.0</title>
     <style>
         :root { --primary: #004d40; --accent: #00bfa5; --bg: #e0f2f1; --panel: #fff; --text: #263238; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 10px; margin: 0; font-size: 14px; line-height: 1.4; }
@@ -26,67 +26,35 @@
         .panel { background: var(--panel); border: 1px solid #b2dfdb; border-radius: 8px; padding: 16px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .panel h2 { margin: 0 0 12px 0; font-size: 0.95rem; color: var(--primary); border-bottom: 2px solid #80cbc4; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* --- 修正箇所: フォーム行 --- */
-        .form-row { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 12px; /* 入力欄同士のマージン */
-            margin-bottom: 12px; 
-            align-items: flex-start; /* 上揃えで高さ違いによるズレ防止 */
-        }
+        /* フォーム行 */
+        .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
         
-        /* --- 修正箇所: 個別のフィールド --- */
-        .field { 
-            /* flex-grow: 1, flex-shrink: 1, basis: auto */
-            /* 中身（入力欄の幅）に合わせてコンテナ幅を変える設定 */
-            flex: 1 1 auto; 
-            min-width: min-content; /* 中身の最小幅までは縮む */
-            display: flex; 
-            flex-direction: column; 
-        }
-        /* 幅広にしたい項目用 */
+        /* フィールド */
+        .field { flex: 1 1 auto; min-width: min-content; display: flex; flex-direction: column; }
         .field-w { flex: 2 1 auto; } 
         
-        label { 
-            display: block; 
-            font-size: 0.75rem; 
-            color: #00695c; 
-            font-weight: 700; 
-            margin-bottom: 4px; 
-            line-height: 1.2;
-            white-space: normal; /* ラベルの折り返し許可 */
-            min-height: 1.2em;
-        }
+        label { display: block; font-size: 0.75rem; color: #00695c; font-weight: 700; margin-bottom: 4px; line-height: 1.2; white-space: normal; min-height: 1.2em; }
 
-        /* --- 修正箇所: 入力欄のスタイル --- */
+        /* 入力欄 */
         input, select, textarea { 
-            /* width: 100% をやめ、min-widthのみ設定 */
             width: 100%; 
-            min-width: 70px; /* 最低限のタップ幅確保 */
+            min-width: 70px; 
             padding: 9px; 
             border: 1px solid #80cbc4; 
             border-radius: 4px; 
             font-size: 0.95rem; 
             height: 40px; 
-            transition: border-color 0.2s, width 0.1s; /* 幅変更をスムーズに */
+            transition: border-color 0.2s, width 0.1s; 
         }
-        /* JavaScriptで幅制御するクラス */
-        input.auto-width {
-            width: auto; /* JSでpixel指定するためautoに戻す */
-            box-sizing: content-box; /* paddingを含まず幅計算 */
-        }
+        /* 幅自動調整用クラス */
+        input.auto-width { width: auto; box-sizing: content-box; }
 
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: #e0f2f1; }
         input[readonly] { background: #f5f5f5; color: #607d8b; border-color: #e0e0e0; pointer-events: none; }
         textarea { height: auto; width: 100%; }
 
         /* サスペンション用グリッド */
-        .sus-grid {
-            display: grid;
-            /* 狭い画面では1列、広ければ自動で列数増 */
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-        }
+        .sus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
 
         /* 特別なフィールド */
         .base-bg { background-color: #fff; border-color: #b2dfdb; } 
@@ -112,6 +80,7 @@
         .modal-box { background: white; width: 95%; max-width: 600px; margin: 40px auto; padding: 25px; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; display:flex; flex-direction: column; }
         .prompt-area { width: 100%; height: 200px; font-family: 'Consolas', monospace; font-size: 0.85rem; padding: 12px; background: #fafafa; border: 1px solid #ddd; border-radius: 4px; white-space: pre-wrap; margin-bottom: 15px; color: #333; }
 
+        /* 履歴・データ管理 */
         .history-list { list-style: none; padding: 0; margin: 0; }
         .history-item { border-bottom: 1px solid #eee; padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.1s; }
         .history-item:hover { background: #e0f2f1; }
@@ -132,7 +101,7 @@
 
 <div class="container">
     <header>
-        <h1>🔧 Motorcycle Setting Data Sheet V1.3</h1>
+        <h1>🔧 Motorcycle Setting Data Sheet Ver1.0</h1>
         <div class="header-btns">
             <button class="header-btn" onclick="openHistory()">📂 履歴</button>
             <button class="header-btn" onclick="openDataMgr()">⚙ 管理</button>
@@ -171,19 +140,16 @@
 
             <div class="panel">
                 <h2>🏍 ベース車両スペック (基準値)</h2>
-                
                 <div class="form-row">
                     <div class="field"><label>基準キャスター(deg)</label><input type="number" id="b_caster" value="24.0" class="base-bg" oninput="calc()"></div>
                     <div class="field"><label>基準WB(mm)</label><input type="number" id="b_wb" value="1410" class="base-bg" oninput="calc()"></div>
                     <div class="field"><label>基準切角(deg)</label><input type="number" id="b_angle" value="30" class="base-bg" oninput="calc()"></div>
                 </div>
-                
                 <div class="form-row" style="background:#e0f2f1; padding:8px; border-radius:4px; border:1px solid #80cbc4;">
                     <div class="field"><label>基準三又Offset(mm)</label><input type="number" id="b_off_tri" value="30" oninput="calc()"></div>
                     <div class="field"><label>基準アクスルOffset(mm)</label><input type="number" id="b_off_ax" value="0" oninput="calc()"></div>
                     <div class="field"><label>合計(mm)</label><input type="text" id="b_off_total" readonly style="font-weight:bold; color:#00695c;"></div>
                 </div>
-
                 <div class="form-row">
                     <div class="field field-w"><label>基準Fタイヤ</label><input type="text" id="b_tire" value="120/70-17" class="base-bg" onchange="calc()"></div>
                     <div class="field"><label>基準SA長(mm)</label><input type="number" id="b_sa" value="550" class="base-bg" oninput="calc()"></div>
@@ -191,7 +157,6 @@
                 <div class="form-row" style="background:#f5f5f5; padding:5px; border-radius:4px;">
                     <div class="field"><label>基準トレール (自動計算)</label><input type="text" id="b_trail_calc" readonly style="font-weight:bold;"></div>
                 </div>
-                
                 <div style="margin-top:10px; border-top:1px dashed #bbb; padding-top:10px;">
                     <label style="color:#004d40; font-size:0.8rem;">⚙ 基準駆動系 (Chain Spec)</label>
                     <div class="form-row">
@@ -247,21 +212,17 @@
         <div class="col-right">
             <div class="panel">
                 <h2>🔧 本日のセッティング</h2>
-                
                 <div class="form-row">
                     <div class="field field-w"><label>ハンドル切角(deg)</label><input type="number" id="c_angle" value="30" oninput="calc()" placeholder="現在値"></div>
                 </div>
-                
                 <div class="form-row" style="background:#fff3e0; padding:8px; border-radius:4px; border:1px solid #ffe0b2;">
                     <div class="field"><label>変更後 三又Offset(mm)</label><input type="number" id="c_off_tri" oninput="calc()" placeholder="基準と同じ"></div>
                     <div class="field"><label>変更後 アクスルOffset(mm)</label><input type="number" id="c_off_ax" oninput="calc()" placeholder="基準と同じ"></div>
                 </div>
-
                 <div class="form-row">
                     <div class="field"><label>突き出し(mm)</label><input type="number" id="p" value="0" oninput="calc()" placeholder="+は前下がり"></div>
                     <div class="field"><label>R車高補正(mm)</label><input type="number" id="rh" value="0" oninput="calc()"></div>
                 </div>
-                
                 <label style="margin-top:10px; color:#004d40; font-weight:bold;">タイヤ & 駆動系</label>
                 <div class="form-row">
                     <div class="field"><label>タイヤメーカー</label><input type="text" id="tire_maker" placeholder="Dunlop"></div>
@@ -275,7 +236,6 @@
                     <div class="field field-w"><label>Rタイヤサイズ</label><input type="text" id="c_rt" value="180/55-17" onchange="calc()"></div>
                     <div class="field"><label>R空気圧(kPa)</label><input type="number" id="c_rp" value="190"></div>
                 </div>
-
                 <div class="form-row" style="margin-top:5px; background:#e0f2f1; padding:8px; border-radius:4px;">
                     <div class="field">
                         <label style="color:#004d40;">使用チェーン</label>
@@ -325,7 +285,6 @@
                 <h2>📝 インプレッション・動画</h2>
                 <input type="url" id="v_url" placeholder="YouTube URL (https://...)" style="margin-bottom:8px;">
                 <textarea id="impression" rows="4" placeholder="走行感覚、課題、試したことなどを入力..."></textarea>
-                
                 <button class="btn-big save" onclick="saveToHistory()">💾 データを保存 (履歴に追加)</button>
                 <button class="btn-big ai" onclick="generatePrompt()">🤖 AI解析を実行 (Prompt生成)</button>
             </div>
@@ -341,27 +300,31 @@
 <script>
     // === ユーティリティ: 入力幅自動調整 ===
     function adjustInputWidth(el) {
-        // キャンバスを使ってテキストの正確なピクセル幅を計測
         const context = document.createElement('canvas').getContext('2d');
         const style = window.getComputedStyle(el);
         context.font = style.font;
-        const text = el.value || el.placeholder || "";
-        const width = context.measureText(text).width;
         
-        // パディングなどの余裕分(+20px)を足して設定
-        // 最低幅(70px)はCSSで保証
-        el.style.width = (width + 25) + 'px';
+        let text = el.value || el.placeholder || "";
+        let extraPadding = 25; // 通常の余白
+
+        // ★ 日付入力の特例処理
+        if (el.type === 'date') {
+            // 日付はブラウザUIがあるため、値に関わらず常に広めの幅を確保
+            text = "2025/12/31"; 
+            extraPadding = 60; // カレンダーアイコン分を含めた余白
+        }
+
+        const width = context.measureText(text).width;
+        el.style.width = (width + extraPadding) + 'px';
     }
 
     function initAutoResize() {
-        const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]'); // dateも含める
         inputs.forEach(input => {
-            // 初期化時に幅調整
             adjustInputWidth(input);
-            // 入力時に幅調整
-            input.addEventListener('input', function() {
-                adjustInputWidth(this);
-            });
+            input.addEventListener('input', function() { adjustInputWidth(this); });
+            // 日付変更時にも発火
+            if(input.type === 'date') input.addEventListener('change', function() { adjustInputWidth(this); });
         });
     }
 
@@ -388,7 +351,6 @@
     function calculateTrail(deg,rad,off){const r=deg*(Math.PI/180);return(rad*Math.sin(r)-off)/Math.cos(r);}
 
     function calc(){
-        // 基準値
         const b_caster=parseFloat(document.getElementById('b_caster').value)||24.0;
         const b_wb=parseFloat(document.getElementById('b_wb').value)||1410;
         const off_tri=parseFloat(document.getElementById('b_off_tri').value)||0; 
@@ -400,7 +362,6 @@
         const b_trail=calculateTrail(b_caster,b_f_rad,b_offset);
         document.getElementById('b_trail_calc').value=b_trail.toFixed(1)+"mm";
 
-        // WB計算 (Chain)
         const b_pitch = parseFloat(document.getElementById('b_chain_size').value) || 15.875;
         const b_l=parseInt(document.getElementById('b_l').value)||112; 
         const b_f=parseInt(document.getElementById('b_f').value)||14; 
@@ -414,7 +375,6 @@
         const c_axle = (c_l*c_pitch - ((c_f+c_r)/2*c_pitch)) / 2;
         const chain_delta = c_axle - b_axle;
 
-        // オフセット変更のWB補正
         const c_off_tri_in = document.getElementById('c_off_tri').value;
         const c_off_ax_in = document.getElementById('c_off_ax').value;
         const c_off_tri = (c_off_tri_in==="") ? off_tri : parseFloat(c_off_tri_in);
@@ -423,12 +383,10 @@
         
         const offset_delta = c_offset - b_offset;
         const b_rad = b_caster * (Math.PI/180);
-        const offset_wb_shift = offset_delta / Math.cos(b_rad); // V14 Fix
+        const offset_wb_shift = offset_delta / Math.cos(b_rad);
 
-        // 実効WB
         const cur_wb = b_wb + chain_delta + offset_wb_shift;
 
-        // 姿勢計算
         const p=parseFloat(document.getElementById('p').value)||0;
         const rh=parseFloat(document.getElementById('rh').value)||0;
         const c_f_rad=getRadius(document.getElementById('c_ft').value);
@@ -438,7 +396,6 @@
         const cur_caster=b_caster+pitch_deg;
         const cur_trail=calculateTrail(cur_caster,c_f_rad,c_offset);
 
-        // 回転半径
         const b_ang=parseFloat(document.getElementById('b_angle').value)||30;
         const c_ang=parseFloat(document.getElementById('c_angle').value)||30;
         const b_radius=b_wb/Math.sin(b_ang*Math.PI/180)/1000;
@@ -483,7 +440,7 @@
         const last=localStorage.getItem('gym_autosave_v14');
         if(last) restoreData(JSON.parse(last));
         calc();
-        initAutoResize(); // 幅調整の初期化
+        initAutoResize();
     }
     function renderLoc(){const s=document.getElementById('loc_select');s.innerHTML="";locs.forEach((l,i)=>{let o=document.createElement('option');o.value=i;o.innerText=l.name;s.appendChild(o);});locChange();}
     function locChange(){const has=(locs.length>0);document.getElementById('btn_edit').disabled=!has;document.getElementById('btn_del').disabled=!has;}
