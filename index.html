@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motorcycle Setting Data Sheet ver.1.1</title>
+    <style>
+        :root { --primary: #004d40; --accent: #00bfa5; --bg: #e0f2f1; --panel: #fff; --text: #263238; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 10px; margin: 0; font-size: 14px; line-height: 1.4; }
+        * { box-sizing: border-box; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        /* ヘッダー */
+        header { background: var(--primary); color: white; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        h1 { margin: 0; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; }
+        .header-btns { display: flex; gap: 10px; }
+        .header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; white-space: nowrap; }
+        .header-btn:hover { background: rgba(255,255,255,0.3); }
+
+        /* レイアウト (レスポンシブ対応強化) */
+        .layout { display: flex; flex-wrap: wrap; gap: 15px; }
+        /* スマホでは100%、タブレット以上で分割 */
+        .col-left { flex: 1 1 350px; min-width: 300px; } 
+        .col-right { flex: 1.2 1 350px; min-width: 300px; }
+
+        /* パネル */
+        .panel { background: var(--panel); border: 1px solid #b2dfdb; border-radius: 8px; padding: 16px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .panel h2 { margin: 0 0 12px 0; font-size: 0.95rem; color: var(--primary); border-bottom: 2px solid #80cbc4; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* フォーム行 */
+        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: end; }
+        
+        /* 個別のフィールド */
+        .field { flex: 1 1 90px; min-width: 0; /* min-width:0でFlexアイテムの縮小を許可しつつbasisで制御 */ }
+        .field-w { flex: 2 1 140px; } 
+        
+        /* ラベルのスタイル修正：重なり防止のため折り返しを許可 */
+        label { 
+            display: block; 
+            font-size: 0.75rem; 
+            color: #00695c; 
+            font-weight: 700; 
+            margin-bottom: 4px; 
+            white-space: normal; /* 折り返し許可 */
+            line-height: 1.2;    /* 行間を詰める */
+            min-height: 1.2em;   /* 最低限の高さを確保 */
+        }
+
+        input, select, textarea { width: 100%; padding: 9px; border: 1px solid #80cbc4; border-radius: 4px; font-size: 0.95rem; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: #e0f2f1; box-shadow: 0 0 0 2px rgba(0,77,64,0.1); }
+        input[readonly] { background: #f5f5f5; color: #607d8b; border-color: #e0e0e0; pointer-events: none; }
+
+        /* サスペンション用グリッド (レスポンシブ対応) */
+        .sus-grid {
+            display: grid;
+            /* 最小130px幅を確保しつつ、画面幅に合わせて列数を自動調整 */
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        /* 特別なフィールド */
+        .base-bg { background-color: #fff; border-color: #b2dfdb; } 
+        
+        /* 計算結果エリア */
+        .calc-box { background: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 6px; }
+        .res-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px dotted #ccc; padding-bottom: 3px; font-size: 0.9rem; }
+        .res-val { font-weight: 800; font-size: 1.15rem; color: #333; white-space: nowrap; }
+        .res-diff { font-size: 0.8rem; margin-left: 6px; font-weight: 600; white-space: nowrap; }
+        .diff-plus { color: #c62828; } .diff-minus { color: #1565c0; } .diff-zero { color: #90a4ae; }
+
+        /* ボタン */
+        .btn-grp { display: flex; gap: 6px; margin-top: 5px; align-items: center; flex-wrap: wrap; }
+        .btn-sm { padding: 6px 10px; font-size: 0.8rem; cursor: pointer; background: #f5f5f5; border: 1px solid #dcdcdc; border-radius: 4px; color: #333; white-space: nowrap; }
+        .btn-sm:hover { background: #e0e0e0; }
+        .btn-weather { background: #e0f7fa; border-color: #006064; color: #006064; font-weight: bold; }
+        
+        .btn-big { width: 100%; padding: 14px; margin-top: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+        .save { background: #004d40; } .save:hover { background: #00332c; }
+        .ai { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; } .ai:active { transform: translateY(4px); box-shadow: none; }
+
+        /* モーダル */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 95%; max-width: 600px; margin: 40px auto; padding: 25px; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; display:flex; flex-direction: column; }
+        .prompt-area { width: 100%; height: 200px; font-family: 'Consolas', monospace; font-size: 0.85rem; padding: 12px; background: #fafafa; border: 1px solid #ddd; border-radius: 4px; white-space: pre-wrap; margin-bottom: 15px; color: #333; }
+
+        /* 履歴・データ管理ボタン */
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item { border-bottom: 1px solid #eee; padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.1s; }
+        .history-item:hover { background: #e0f2f1; }
+        .history-info { flex: 1; }
+        .history-del { background: #ffcdd2; color: #c62828; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-left: 10px; font-weight: bold; white-space: nowrap; }
+        .data-btn { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; font-weight: 600; background: #fff; transition: 0.2s; }
+        .data-btn:hover { background: #f5f5f5; transform: translateX(2px); }
+        .btn-export { border-left: 5px solid #2e7d32; } .btn-import { border-left: 5px solid #1565c0; } .btn-reset { border-left: 5px solid #d32f2f; color: #d32f2f; }
+
+        /* スマートフォン向け微調整 */
+        @media (max-width: 600px) {
+            .form-row { gap: 8px; }
+            input, select { font-size: 16px; /* iOSでのズーム防止 */ }
+            h1 { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🔧 Moto Setting V1.1</h1>
+        <div class="header-btns">
+            <button class="header-btn" onclick="openHistory()">📂 履歴</button>
+            <button class="header-btn" onclick="openDataMgr()">⚙ 管理</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <div class="col-left">
+            <div class="panel">
+                <h2>📍 場所・コンディション</h2>
+                <div class="form-row">
+                    <div class="field field-w"><label>日付</label><input type="date" id="date_input"></div>
+                    <div class="field field-w">
+                        <label>場所</label>
+                        <select id="loc_select" onchange="locChange()"></select>
+                        <div class="btn-grp">
+                            <button class="btn-sm" onclick="modal('loc_add')">＋新規</button>
+                            <button class="btn-sm" id="btn_edit" onclick="modal('loc_edit')" disabled>編集</button>
+                            <button class="btn-sm" id="btn_del" onclick="delLoc()" disabled style="color:red;">削除</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row" style="align-items: flex-end;">
+                     <div class="field" style="flex:0 0 auto;">
+                        <button class="btn-sm btn-weather" id="btn_fetch_weather" onclick="fetchWeather()">☁️ 天気取得</button>
+                     </div>
+                     <div class="field" style="font-size:0.75rem; color:#666; padding-bottom:5px;">※要住所・通信</div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>気温℃</label><input type="number" id="temp" value="20"></div>
+                    <div class="field"><label>路面℃</label><input type="number" id="road" value="25"></div>
+                    <div class="field"><label>湿度%</label><input type="number" id="humi" value="50"></div>
+                    <div class="field"><label>状況</label><select id="cond"><option>ドライ</option><option>ウェット</option></select></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🏍 ベース車両スペック (基準値)</h2>
+                
+                <div class="form-row">
+                    <div class="field"><label>基準キャスター(deg)</label><input type="number" id="b_caster" value="24.0" class="base-bg" oninput="calc()"></div>
+                    <div class="field"><label>基準WB(mm)</label><input type="number" id="b_wb" value="1410" class="base-bg" oninput="calc()"></div>
+                    <div class="field"><label>基準切角(deg)</label><input type="number" id="b_angle" value="30" class="base-bg" oninput="calc()"></div>
+                </div>
+                
+                <div class="form-row" style="background:#e0f2f1; padding:8px; border-radius:4px; border:1px solid #80cbc4;">
+                    <div class="field"><label>基準三又Offset(mm)</label><input type="number" id="b_off_tri" value="30" oninput="calc()"></div>
+                    <div class="field"><label>基準アクスルOffset(mm)</label><input type="number" id="b_off_ax" value="0" oninput="calc()"></div>
+                    <div class="field"><label>合計(mm)</label><input type="text" id="b_off_total" readonly style="font-weight:bold; color:#00695c;"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field field-w"><label>基準Fタイヤ</label><input type="text" id="b_tire" value="120/70-17" class="base-bg" onchange="calc()"></div>
+                    <div class="field"><label>基準SA長(mm)</label><input type="number" id="b_sa" value="550" class="base-bg" oninput="calc()"></div>
+                </div>
+                <div class="form-row" style="background:#f5f5f5; padding:5px; border-radius:4px;">
+                    <div class="field"><label>基準トレール (自動計算)</label><input type="text" id="b_trail_calc" readonly style="font-weight:bold;"></div>
+                </div>
+                
+                <div style="margin-top:10px; border-top:1px dashed #bbb; padding-top:10px;">
+                    <label style="color:#004d40; font-size:0.8rem;">⚙ 基準駆動系 (Chain Spec)</label>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>チェーン</label>
+                            <select id="b_chain_size" onchange="calc()" class="base-bg">
+                                <option value="12.70">415/420/428</option>
+                                <option value="15.875" selected>520/525/530</option>
+                                <option value="19.05">630</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>リンク数</label><input type="number" id="b_l" value="112" class="base-bg" oninput="calc()"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="field"><label>F丁数</label><input type="number" id="b_f" value="14" class="base-bg" oninput="calc()"></div>
+                        <div class="field"><label>R丁数</label><input type="number" id="b_r" value="43" class="base-bg" oninput="calc()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="border:2px solid #004d40;">
+                <h2>📊 シミュレーション結果</h2>
+                <div class="calc-box">
+                    <div class="res-row">
+                        <span>実効キャスター(deg)</span>
+                        <div><span class="res-val" id="res_caster">--</span><span class="res-diff" id="diff_caster"></span></div>
+                    </div>
+                    <div class="res-row">
+                        <span>実効トレール(mm)</span>
+                        <div><span class="res-val" id="res_trail">--</span><span class="res-diff" id="diff_trail"></span></div>
+                    </div>
+                    <div class="res-row">
+                        <span>実効WB(mm)</span>
+                        <div><span class="res-val" id="res_wb">--</span><span class="res-diff" id="diff_wb"></span></div>
+                    </div>
+                    <div class="res-row" style="background:rgba(255,255,255,0.5); padding:0 4px; border-radius:4px;">
+                        <span>最小回転半径(m)</span>
+                        <div><span class="res-val" id="res_radius">--</span><span class="res-diff" id="diff_radius"></span></div>
+                    </div>
+                    <div class="res-row" style="border:none; margin-top:5px;">
+                        <span>姿勢ピッチ角(deg)</span>
+                        <span class="res-val" id="res_pitch" style="font-size:1rem; font-weight:normal;">--</span>
+                    </div>
+                    <hr style="border:0; border-top:1px dashed #bbb; margin:5px 0;">
+                    <div class="res-row" style="border:none; margin:0;">
+                        <span>二次減速比</span>
+                        <div><span class="res-val" id="res_ratio">--</span><span class="res-diff" id="diff_ratio"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-right">
+            <div class="panel">
+                <h2>🔧 本日のセッティング</h2>
+                
+                <div class="form-row">
+                    <div class="field field-w"><label>ハンドル切角(deg)</label><input type="number" id="c_angle" value="30" oninput="calc()" placeholder="現在値"></div>
+                </div>
+                
+                <div class="form-row" style="background:#fff3e0; padding:8px; border-radius:4px; border:1px solid #ffe0b2;">
+                    <div class="field"><label>変更後 三又Offset(mm)</label><input type="number" id="c_off_tri" oninput="calc()" placeholder="基準と同じ"></div>
+                    <div class="field"><label>変更後 アクスルOffset(mm)</label><input type="number" id="c_off_ax" oninput="calc()" placeholder="基準と同じ"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field"><label>突き出し(mm)</label><input type="number" id="p" value="0" oninput="calc()" placeholder="+は前下がり"></div>
+                    <div class="field"><label>R車高補正(mm)</label><input type="number" id="rh" value="0" oninput="calc()"></div>
+                </div>
+                
+                <label style="margin-top:10px; color:#004d40; font-weight:bold;">タイヤ & 駆動系</label>
+                <div class="form-row">
+                    <div class="field"><label>タイヤメーカー</label><input type="text" id="tire_maker" placeholder="Dunlop"></div>
+                    <div class="field"><label>タイヤ銘柄</label><input type="text" id="tire_model" placeholder="Q5"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field field-w"><label>Fタイヤサイズ</label><input type="text" id="c_ft" value="120/70-17" onchange="calc()"></div>
+                    <div class="field"><label>F空気圧(kPa)</label><input type="number" id="c_fp" value="200"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field field-w"><label>Rタイヤサイズ</label><input type="text" id="c_rt" value="180/55-17" onchange="calc()"></div>
+                    <div class="field"><label>R空気圧(kPa)</label><input type="number" id="c_rp" value="190"></div>
+                </div>
+
+                <div class="form-row" style="margin-top:5px; background:#e0f2f1; padding:8px; border-radius:4px;">
+                    <div class="field">
+                        <label style="color:#004d40;">使用チェーン</label>
+                        <select id="c_chain_size" onchange="calc()">
+                            <option value="12.70">415/420/428</option>
+                            <option value="15.875" selected>520/525/530</option>
+                            <option value="19.05">630</option>
+                        </select>
+                    </div>
+                    <div class="field"><label style="color:#004d40;">リンク数</label><input type="number" id="c_l" value="114" oninput="calc()"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>F丁数</label><input type="number" id="c_f" value="14" oninput="calc()"></div>
+                    <div class="field"><label>R丁数</label><input type="number" id="c_r" value="45" oninput="calc()"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🌀 サスペンション詳細メモ</h2>
+                <div class="form-row">
+                    <div class="field-w" style="flex:1;">
+                        <label style="border-bottom:1px solid #ccc; color:#e65100;">FRONT</label>
+                        <div class="sus-grid">
+                            <div><label>バネレート(N/mm)</label><input type="text" id="fs" placeholder="0.85"></div>
+                            <div><label>油面高(mm)</label><input type="text" id="fo" placeholder="120"></div>
+                            <div><label>Comp(全閉からクリック)</label><input type="text" id="fc" placeholder="5"></div>
+                            <div><label>Reb(全閉からクリック)</label><input type="text" id="fr" placeholder="10"></div>
+                            <div><label>Pre(mm)</label><input type="text" id="fp" placeholder="0"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field-w" style="flex:1;">
+                        <label style="border-bottom:1px solid #ccc; color:#004d40;">REAR</label>
+                        <div class="sus-grid">
+                            <div><label>バネレート(N/mm)</label><input type="text" id="rs" placeholder="10.5"></div>
+                            <div><label>リンク</label><input type="text" id="rl" placeholder="STD"></div>
+                            <div><label>Comp(全閉からクリック)</label><input type="text" id="rc" placeholder="H2/L10"></div>
+                            <div><label>Reb(全閉からクリック)</label><input type="text" id="rr" placeholder="12"></div>
+                            <div><label>Pre(mm)</label><input type="text" id="rp" placeholder="5mm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>📝 インプレッション・動画</h2>
+                <input type="url" id="v_url" placeholder="YouTube URL (https://...)" style="margin-bottom:8px;">
+                <textarea id="impression" rows="4" placeholder="走行感覚、課題、試したことなどを入力..."></textarea>
+                
+                <button class="btn-big save" onclick="saveToHistory()">💾 データを保存 (履歴に追加)</button>
+                <button class="btn-big ai" onclick="generatePrompt()">🤖 AI解析を実行 (Prompt生成)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loc_modal" class="modal"><div class="modal-box" style="width:300px;"><h3 id="m_title">場所情報</h3><label>名称</label><input type="text" id="m_name" style="margin-bottom:10px;"><label>住所 (市町村まで入力)</label><input type="text" id="m_addr" style="margin-bottom:15px;" placeholder="例: 茨城県かすみがうら市"><div style="text-align:right;"><button class="btn-sm" onclick="document.getElementById('loc_modal').style.display='none'">閉じる</button><button class="btn-sm" onclick="saveLoc()" style="background:#004d40; color:white;">保存</button></div></div></div>
+<div id="ai_modal" class="modal"><div class="modal-box"><h3>🤖 AIエンジニアへの依頼書</h3><textarea id="prompt_output" class="prompt-area"></textarea><div style="text-align:right;"><button class="btn-sm" onclick="copyToClipboard()" style="background:#2e7d32; color:white;">📋 コピー</button><button class="btn-sm" onclick="document.getElementById('ai_modal').style.display='none'">閉じる</button></div></div></div>
+<div id="history_modal" class="modal"><div class="modal-box"><h3>📂 保存済み履歴</h3><div style="max-height:300px; overflow-y:auto; border:1px solid #eee; margin-bottom:10px;"><ul id="history_list" class="history-list"></ul></div><div style="text-align:right;"><button class="btn-sm" onclick="document.getElementById('history_modal').style.display='none'">閉じる</button></div></div></div>
+<div id="data_modal" class="modal"><div class="modal-box"><h3>⚙ データ管理・バックアップ</h3><button class="data-btn btn-export" onclick="exportData()">📤 バックアップ保存 (Export)</button><button class="data-btn btn-import" onclick="document.getElementById('file_input').click()">📥 データ復元 (Import)</button><input type="file" id="file_input" style="display:none" onchange="importData(this)" accept=".json"><button class="data-btn btn-reset" onclick="resetAllData()">🗑 全データ削除 (Reset)</button><div style="text-align:right; margin-top:10px;"><button class="btn-sm" onclick="document.getElementById('data_modal').style.display='none'">閉じる</button></div></div></div>
+
+<script>
+    // === 1. 天気API ===
+    async function fetchWeather() {
+        const btn=document.getElementById('btn_fetch_weather');const originalText=btn.innerText;btn.innerText="通信中...";btn.disabled=true;
+        try {
+            const loc=locs[document.getElementById('loc_select').value]; const dateStr=document.getElementById('date_input').value;
+            if(!loc||!loc.addr)throw new Error("場所の住所が必要です"); if(!dateStr)throw new Error("日付を選択してください");
+            const gRes=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.addr)}`);
+            const gData=await gRes.json(); if(!gData||gData.length===0)throw new Error("住所が見つかりません");
+            const wRes=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${gData[0].lat}&longitude=${gData[0].lon}&daily=temperature_2m_max,relative_humidity_2m_mean,precipitation_sum&timezone=auto&start_date=${dateStr}&end_date=${dateStr}`);
+            const wData=await wRes.json(); if(!wData.daily)throw new Error("気象データなし");
+            document.getElementById('temp').value=wData.daily.temperature_2m_max[0];
+            document.getElementById('humi').value=wData.daily.relative_humidity_2m_mean[0];
+            document.getElementById('road').value=(wData.daily.temperature_2m_max[0]+5).toFixed(1);
+            document.getElementById('cond').value=(wData.daily.precipitation_sum[0]>0)?"ウェット":"ドライ";
+            alert("天気取得完了");
+        } catch(e){alert("エラー: "+e.message);} finally{btn.innerText=originalText;btn.disabled=false;}
+    }
+
+    // === 2. 物理演算 (V14: Offset Projection Fix) ===
+    function getRadius(str){try{const m=str.match(/(\d+)\/(\d+)\D+(\d+)/);if(!m)return 300;return((parseInt(m[3])*25.4)+(parseInt(m[1])*(parseInt(m[2])/100)*2))/2;}catch{return 300;}}
+    
+    // Trail Formula: (R * sin(theta) - O) / cos(theta)
+    function calculateTrail(deg,rad,off){const r=deg*(Math.PI/180);return(rad*Math.sin(r)-off)/Math.cos(r);}
+
+    function calc(){
+        // 基準値
+        const b_caster=parseFloat(document.getElementById('b_caster').value)||24.0;
+        const b_wb=parseFloat(document.getElementById('b_wb').value)||1410;
+        const off_tri=parseFloat(document.getElementById('b_off_tri').value)||0; 
+        const off_ax=parseFloat(document.getElementById('b_off_ax').value)||0;   
+        const b_offset=off_tri+off_ax;
+        document.getElementById('b_off_total').value=b_offset+"mm";
+
+        const b_f_rad=getRadius(document.getElementById('b_tire').value);
+        const b_trail=calculateTrail(b_caster,b_f_rad,b_offset);
+        document.getElementById('b_trail_calc').value=b_trail.toFixed(1)+"mm";
+
+        // WB計算 (Chain)
+        const b_pitch = parseFloat(document.getElementById('b_chain_size').value) || 15.875;
+        const b_l=parseInt(document.getElementById('b_l').value)||112; 
+        const b_f=parseInt(document.getElementById('b_f').value)||14; 
+        const b_r=parseInt(document.getElementById('b_r').value)||43;
+        const b_axle = (b_l*b_pitch - ((b_f+b_r)/2*b_pitch)) / 2;
+
+        const c_pitch = parseFloat(document.getElementById('c_chain_size').value) || 15.875;
+        const c_l=parseInt(document.getElementById('c_l').value)||114; 
+        const c_f=parseInt(document.getElementById('c_f').value)||14; 
+        const c_r=parseInt(document.getElementById('c_r').value)||45;
+        const c_axle = (c_l*c_pitch - ((c_f+c_r)/2*c_pitch)) / 2;
+        const chain_delta = c_axle - b_axle;
+
+        // オフセット変更のWB補正 (V14 FIX)
+        const c_off_tri_in = document.getElementById('c_off_tri').value;
+        const c_off_ax_in = document.getElementById('c_off_ax').value;
+        const c_off_tri = (c_off_tri_in==="") ? off_tri : parseFloat(c_off_tri_in);
+        const c_off_ax = (c_off_ax_in==="") ? off_ax : parseFloat(c_off_ax_in);
+        const c_offset = c_off_tri + c_off_ax;
+        
+        const offset_delta = c_offset - b_offset;
+        const b_rad = b_caster * (Math.PI/180);
+        
+        // ★ 修正箇所: 水平移動量は O / cos(theta)
+        const offset_wb_shift = offset_delta / Math.cos(b_rad);
+
+        // 実効WB
+        const cur_wb = b_wb + chain_delta + offset_wb_shift;
+
+        // 姿勢計算
+        const p=parseFloat(document.getElementById('p').value)||0;
+        const rh=parseFloat(document.getElementById('rh').value)||0;
+        const c_f_rad=getRadius(document.getElementById('c_ft').value);
+        const d_front=(c_f_rad-b_f_rad)-p;
+        const pitch_deg=Math.atan2((d_front-rh),cur_wb)*(180/Math.PI);
+        
+        const cur_caster=b_caster+pitch_deg;
+        const cur_trail=calculateTrail(cur_caster,c_f_rad,c_offset);
+
+        // 回転半径
+        const b_ang=parseFloat(document.getElementById('b_angle').value)||30;
+        const c_ang=parseFloat(document.getElementById('c_angle').value)||30;
+        const b_radius=b_wb/Math.sin(b_ang*Math.PI/180)/1000;
+        const c_radius=cur_wb/Math.sin(c_ang*Math.PI/180)/1000;
+
+        showRes('res_caster','diff_caster',cur_caster,b_caster,2,"°");
+        showRes('res_trail','diff_trail',cur_trail,b_trail,1,"mm");
+        showRes('res_wb','diff_wb',cur_wb,b_wb,0,"mm");
+        showRes('res_radius','diff_radius',c_radius,b_radius,2,"m");
+
+        const b_rat=b_r/b_f;const c_rat=c_r/c_f;
+        showRes('res_ratio','diff_ratio',c_rat,b_rat,2,"");
+        const pt=pitch_deg.toFixed(2)+"° "+(pitch_deg<-0.01?"(前)":(pitch_deg>0.01?"(後)":""));
+        document.getElementById('res_pitch').innerText=pt;
+    }
+    
+    function showRes(id,did,c,b,f,u){
+        document.getElementById(id).innerText=c.toFixed(f)+u;
+        const d=c-b; const e=document.getElementById(did);
+        if(Math.abs(d)<0.001){e.innerText="(±0)";e.className="res-diff diff-zero";}
+        else{e.innerText=`(${d>0?"+":""}${d.toFixed(f)})`;e.className=d>0?"res-diff diff-plus":"res-diff diff-minus";}
+    }
+
+    // === 3. システム系 ===
+    function generatePrompt(){
+        const d=(id)=>document.getElementById(id).value;
+        const t=(id)=>document.getElementById(id).innerText;
+        const locName=locs[document.getElementById('loc_select').value]?.name||"未選択";
+        let p=`モトジムカーナ解析依頼:あなたは優秀なモーターサイクルエンジニアでチーフメカニックです。提示されたセッティング情報とインプレッションコメント（あれば動画）から解析してください。さらに速く走る為にセッティングの方向性を提示してください。\n日付:${d('date_input')} @${locName}\n[ジオメトリ]\nキャスター(deg):${d('b_caster')}->${t('res_caster')} ${t('diff_caster')}\nトレール(mm):${d('b_trail_calc')}->${t('res_trail')} ${t('diff_trail')}\nWB:${d('b_wb')}->${t('res_wb')} ${t('diff_wb')}\n切れ角(deg):${d('b_angle')}->${d('c_angle')}\n半径(m):${t('res_radius')} ${t('diff_radius')}\n\n[構成]\nオフセット(mm):${d('b_off_total')}\n\n[設定]\n突き出し(mm)${d('p')}, R車高調整(mm)${d('rh')}\nF${d('c_f')}-R${d('c_r')} (L${d('c_l')})\nタイヤメーカ:${d('tire_maker')} ${d('tire_model')}\nタイヤサイズ F:${d('c_ft')} / R:${d('c_rt')}\n空気圧(kPa) F:${d('c_fp')} / R:${d('c_rp')}\n\n[サス]\nF:バネレート(N/mm)${d('fs')}/油面高(mm)${d('fo')}/Comp(全閉からのクリック数)${d('fc')}/Reb(全閉からのクリック数)${d('fr')}/Preload(mm)${d('fp')}\nR:バネレート(N/mm)${d('rs')}/リンク${d('rl')}/Comp(全閉からのクリック数)${d('rc')}/Reb(全閉からのクリック数)${d('rr')}/Preload(mm)${d('rp')}\n\n[インプレ]\n${d('impression')}\nURL:${d('v_url')}`;
+        document.getElementById('prompt_output').value=p;
+        document.getElementById('ai_modal').style.display='block';
+    }
+    function copyToClipboard(){const t=document.getElementById("prompt_output");t.select();document.execCommand("copy");alert("コピーしました");}
+    
+    let locs=[{name:"未選択",addr:""}];
+    let editIdx=-1;
+    function init(){
+        document.getElementById('date_input').valueAsDate=new Date();
+        const s=localStorage.getItem('gym_locs_v14'); if(s) locs=JSON.parse(s); 
+        else { const old=localStorage.getItem('gym_locs_v13'); if(old) locs=JSON.parse(old); }
+        renderLoc();
+        const last=localStorage.getItem('gym_autosave_v14');
+        if(last) restoreData(JSON.parse(last));
+        calc();
+    }
+    function renderLoc(){const s=document.getElementById('loc_select');s.innerHTML="";locs.forEach((l,i)=>{let o=document.createElement('option');o.value=i;o.innerText=l.name;s.appendChild(o);});locChange();}
+    function locChange(){const has=(locs.length>0);document.getElementById('btn_edit').disabled=!has;document.getElementById('btn_del').disabled=!has;}
+    function modal(m){document.getElementById('loc_modal').style.display='block';if(m==='loc_edit'){editIdx=document.getElementById('loc_select').value;document.getElementById('m_title').innerText="編集";document.getElementById('m_name').value=locs[editIdx].name;document.getElementById('m_addr').value=locs[editIdx].addr;}else{editIdx=-1;document.getElementById('m_title').innerText="新規";document.getElementById('m_name').value="";document.getElementById('m_addr').value="";}}
+    function saveLoc(){const n=document.getElementById('m_name').value,a=document.getElementById('m_addr').value;if(n){if(editIdx>=0)locs[editIdx]={name:n,addr:a};else locs.push({name:n,addr:a});localStorage.setItem('gym_locs_v14',JSON.stringify(locs));renderLoc();document.getElementById('loc_modal').style.display='none';}}
+    function delLoc(){if(confirm("削除しますか？")){locs.splice(document.getElementById('loc_select').value,1);localStorage.setItem('gym_locs_v14',JSON.stringify(locs));renderLoc();}}
+    function getData(){const inputs=document.querySelectorAll('input,select,textarea');const d={};inputs.forEach(e=>{if(e.id && !e.id.startsWith('m_') && e.id!=='prompt_output' && !e.id.startsWith('res_') && !e.id.startsWith('diff_')) d[e.id]=e.value;});return d;}
+    function restoreData(d){Object.keys(d).forEach(k=>{const e=document.getElementById(k);if(e)e.value=d[k];});calc();}
+    function saveToHistory(){const d=getData(); const now=new Date();const item={id:now.getTime(), date:document.getElementById('date_input').value, time:now.toLocaleTimeString(),loc:locs[document.getElementById('loc_select').value]?.name||"Unknown",imp:(document.getElementById('impression').value||"").substring(0,20), data:d};let h=JSON.parse(localStorage.getItem('gym_hist_v14')||"[]");h.unshift(item);localStorage.setItem('gym_hist_v14',JSON.stringify(h));localStorage.setItem('gym_autosave_v14',JSON.stringify(d));alert("履歴に保存しました");}
+    function openHistory(){const h=JSON.parse(localStorage.getItem('gym_hist_v14')||"[]");const el=document.getElementById('history_list'); el.innerHTML="";if(h.length===0) el.innerHTML="<li style='padding:10px;'>履歴なし</li>";else h.forEach((item,i)=>{const li=document.createElement('li'); li.className="history-item";li.innerHTML=`<div class="history-info" onclick="loadHist(${i})"><div class="history-date">${item.date} (${item.time})</div><div class="history-meta">📍${item.loc} / 📝${item.imp}...</div></div><button class="history-del" onclick="delHist(${i})">削除</button>`;el.appendChild(li);});document.getElementById('history_modal').style.display='block';}
+    function loadHist(i){if(confirm("復元しますか？")){const h=JSON.parse(localStorage.getItem('gym_hist_v14')||"[]");if(h[i]) restoreData(h[i].data);document.getElementById('history_modal').style.display='none';}}
+    function delHist(i){if(confirm("削除しますか？")){let h=JSON.parse(localStorage.getItem('gym_hist_v14')||"[]");h.splice(i,1); localStorage.setItem('gym_hist_v14',JSON.stringify(h));openHistory();}}
+    function openDataMgr(){ document.getElementById('data_modal').style.display='block'; }
+    function exportData(){const backup = {locs: localStorage.getItem('gym_locs_v14'),history: localStorage.getItem('gym_hist_v14'),autosave: localStorage.getItem('gym_autosave_v14')};const blob = new Blob([JSON.stringify(backup)], {type: 'application/json'});const url = URL.createObjectURL(blob);const a = document.createElement('a');const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');a.href = url; a.download = `gymkhana_v14_backup_${dateStr}.json`;document.body.appendChild(a); a.click(); document.body.removeChild(a);alert("ダウンロードしました");}
+    function importData(input){const file = input.files[0]; if(!file) return;const reader = new FileReader();reader.onload = (e) => {try {const data = JSON.parse(e.target.result);if(confirm("上書き復元しますか？")){if(data.locs) localStorage.setItem('gym_locs_v14', data.locs);if(data.history) localStorage.setItem('gym_hist_v14', data.history);if(data.autosave) localStorage.setItem('gym_autosave_v14', data.autosave);alert("復元完了。リロードします"); location.reload();}} catch(err) { alert("読込エラー"); }};reader.readAsText(file);}
+    function resetAllData(){if(confirm("全データ削除しますか？")){localStorage.removeItem('gym_locs_v14');localStorage.removeItem('gym_hist_v14');localStorage.removeItem('gym_autosave_v14');alert("初期化完了"); location.reload();}}
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
